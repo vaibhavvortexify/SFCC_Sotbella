@@ -1,0 +1,303 @@
+// Variables - SFCC BM Palette
+$font-stack: 'Verdana', 'Arial', sans-serif;
+$color-text-main: #333;
+$color-text-light: #666;
+$color-border: #ccc;
+$color-border-dark: #b7b7b7;
+$bg-main: #ffffff;
+$bg-light: #f9f9f9;
+$bg-panel: #f2f2f2;
+$bg-hover: #ffffcc; // Classic SFCC Hover Yellow
+$color-primary: #0066cc;
+$color-danger: #cc0000;
+
+// Status Colors
+$status-req-bg: #fff3cd; 
+$status-req-text: #856404;
+$status-app-bg: #d4edda; 
+$status-app-text: #155724;
+$status-rej-bg: #f8d7da; 
+$status-rej-text: #721c24;
+
+// Mixins
+@mixin btn-base {
+    padding: 6px 15px;
+    font-size: 11px;
+    font-weight: bold;
+    cursor: pointer;
+    border: 1px solid #888;
+    background: #eee;
+}
+.body{
+    background-color: black;
+}
+
+// Styles
+.return-exchange-dashboard {
+    font-family: $font-stack;
+    font-size: 11px;
+    color: $color-text-main;
+    padding: 20px;
+    background-color: $bg-main;
+
+    h1.bm-title {
+        font-size: 18px;
+        font-weight: normal;
+        color: #58595b;
+        margin-bottom: 15px;
+        border-bottom: 1px solid #dcdcdc;
+        padding-bottom: 5px;
+    }
+
+    .hidden {
+        display: none !important;
+    }
+
+    // 1. Module Navigation
+    .module-nav {
+        margin-bottom: 20px;
+        background-color: $bg-panel;
+        padding: 10px;
+        border: 1px solid $color-border;
+
+        label {
+            font-weight: bold;
+            margin-right: 10px;
+            font-size: 12px;
+        }
+
+        .nav-btn {
+            padding: 5px 15px;
+            cursor: pointer;
+            border: 1px solid $color-border;
+            background: #e6e6e6;
+            margin-right: 5px;
+
+            &.active {
+                background: $bg-main;
+                border-bottom: 2px solid $color-primary;
+                font-weight: bold;
+            }
+        }
+    }
+
+    // 2. Tabs
+    .tab-container {
+        border-bottom: 1px solid $color-border-dark;
+        margin-bottom: 15px;
+        padding-left: 5px;
+
+        .tab {
+            display: inline-block;
+            padding: 6px 15px;
+            margin-right: 2px;
+            background-color: #e3e3e3;
+            border: 1px solid $color-border-dark;
+            border-bottom: none;
+            cursor: pointer;
+            color: $color-text-main;
+            border-radius: 3px 3px 0 0;
+
+            &.active {
+                background-color: #f7f7f7;
+                font-weight: bold;
+                position: relative;
+                top: 1px;
+                border-bottom: 1px solid #f7f7f7;
+            }
+        }
+    }
+
+    // 3. Filter Bar
+    .filter-bar {
+        background-color: #efefef;
+        padding: 8px;
+        border: 1px solid $color-border;
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+
+        .btn-bm {
+            @include btn-base;
+        }
+    }
+
+    // 4. Data Table
+    table.bm-table {
+        width: 100%;
+        border-collapse: collapse;
+        border: 1px solid $color-border;
+        font-size: 11px;
+
+        th {
+            background-color: #e0e0e0;
+            text-align: left;
+            padding: 6px;
+            border-bottom: 1px solid $color-border;
+            font-weight: bold;
+        }
+
+        td {
+            padding: 8px 6px;
+            border-bottom: 1px solid #e5e5e5;
+            vertical-align: middle;
+        }
+
+        tr {
+            &:nth-child(even) {
+                background-color: $bg-light;
+            }
+
+            // Interactive rows
+            &.data-row {
+                cursor: pointer;
+                &:hover {
+                    background-color: $bg-hover;
+                }
+            }
+        }
+
+        .thumb-img {
+            width: 40px;
+            height: 40px;
+            object-fit: cover;
+            border: 1px solid $color-border;
+            vertical-align: middle;
+            margin-right: 10px;
+        }
+    }
+
+    // 5. Status Badges
+    .status-badge {
+        padding: 3px 6px;
+        border-radius: 3px;
+        font-size: 10px;
+        font-weight: bold;
+
+        &.st-req { background: $status-req-bg; color: $status-req-text; }
+        &.st-app { background: $status-app-bg; color: $status-app-text; }
+        &.st-rej { background: $status-rej-bg; color: $status-rej-text; }
+    }
+
+    // 6. Detail View
+    #detail-view {
+        margin-top: 20px;
+        border: 1px solid #999;
+        background: $bg-main;
+        padding: 20px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+
+        .detail-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #ddd;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+
+            .btn-bm {
+                @include btn-base;
+            }
+        }
+
+        .section-title {
+            font-size: 14px;
+            font-weight: bold;
+            color: $color-primary;
+            margin-bottom: 10px;
+            margin-top: 15px;
+            text-transform: uppercase;
+        }
+
+        .detail-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+
+            .info-row {
+                margin-bottom: 8px;
+                display: flex;
+                
+                .info-label {
+                    width: 120px;
+                    font-weight: bold;
+                    color: $color-text-light;
+                }
+            }
+        }
+
+        // Item Card Style
+        .item-card {
+            background: $bg-light;
+            padding: 10px;
+            border: 1px solid #eee;
+            display: flex;
+
+            img {
+                margin-right: 15px;
+                border: 1px solid $color-border;
+            }
+        }
+
+        // Exchange Logic
+        .exchange-comparison {
+            display: flex;
+            gap: 20px;
+            background: #f0f4f8;
+            padding: 15px;
+            border: 1px solid #d1d9e6;
+
+            .exchange-card {
+                flex: 1;
+                background: $bg-main;
+                padding: 10px;
+                border: 1px solid $color-border;
+
+                .card-label {
+                    font-size: 10px;
+                    text-transform: uppercase;
+                    color: #999;
+                    &.new { color: $color-primary; }
+                }
+            }
+
+            .arrow-icon {
+                display: flex;
+                align-items: center;
+                font-size: 20px;
+                color: $color-text-light;
+            }
+        }
+
+        // Action Bar
+        .action-bar {
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+            text-align: right;
+
+            span {
+                float: left;
+                font-style: italic;
+                color: $color-text-light;
+            }
+
+            .btn-bm {
+                @include btn-base;
+                
+                &.btn-primary {
+                    background-color: $color-primary;
+                    color: white;
+                    border: 1px solid darken($color-primary, 10%);
+                }
+
+                &.btn-danger {
+                    background-color: $color-danger;
+                    color: white;
+                    border: 1px solid darken($color-danger, 10%);
+                }
+            }
+        }
+    }
+}

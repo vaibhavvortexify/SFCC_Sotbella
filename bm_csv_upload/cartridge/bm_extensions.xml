@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<extensions xmlns="http://www.demandware.com/xml/bmmodules/2007-12-11"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:schemaLocation="http://www.demandware.com/xml/bmmodules/2007-12-11 bmext.xsd">
+
+    <menuitem id="bm_impex_upload_tools" site="true">
+        <name xml:lang="x-default">IMPEX UPLOAD</name>
+        <short_description xml:lang="x-default">IMPEX Upload Tools</short_description>
+        <description xml:lang="x-default">Upload CSVs into impex/src/catalog</description>
+        <icon>icons/import-csv.jpg</icon>
+    </menuitem>
+
+    <menuaction id="bm_impex_upload_catalog"
+                menupath="bm_impex_upload_tools"
+                position="20"
+                site="true">
+
+        <name xml:lang="x-default">Upload Catalog CSV</name>
+        <short_description xml:lang="x-default">Upload Catalog CSV</short_description>
+        <description xml:lang="x-default">Upload and move CSV to impex/src/catalog</description>
+
+        <!-- IMPORTANT: This calls the pipeline wrapper -->
+        <exec pipeline="IMPEXUploadController" node="ShowCatalog" />
+
+        <sub-pipelines>
+            <pipeline name="IMPEXUploadController-ProcessCatalog" />
+        </sub-pipelines>
+
+        <parameters>
+            <parameter name="submitFile" value="false" />
+        </parameters>
+
+        <icon>icons/catalog.gif</icon>
+    </menuaction>
+    
+    <menuaction id="bm_impex_upload_pricebook"
+            menupath="bm_impex_upload_tools"
+            position="30"
+            site="true">
+
+    <name xml:lang="x-default">Upload Pricebook CSV</name>
+    <short_description xml:lang="x-default">Upload Pricebook CSV</short_description>
+    <description xml:lang="x-default">Upload and save CSV to impex/src/pricebooks</description>
+
+    <exec pipeline="IMPEXUploadController" node="ShowPricebook"/>
+
+    <sub-pipelines>
+        <pipeline name="IMPEXUploadController-ProcessPricebook"/>
+    </sub-pipelines>
+
+    <parameters>
+        <parameter name="submitFile" value="false"/>
+    </parameters>
+
+    <icon>icons/pricebook.gif</icon>
+</menuaction>
+
+</extensions>

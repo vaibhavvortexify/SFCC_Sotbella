@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<extensions xmlns="http://www.demandware.com/xml/bmmodules/2007-12-11"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.demandware.com/xml/bmmodules/2007-12-11 bmext.xsd">
+
+    <menuitem id="bm_return_exchange_menu" site="true">
+        <name xml:lang="x-default">Return &amp; Exchange</name>
+        <short_description xml:lang="x-default">Return Management Tools</short_description>
+        <description xml:lang="x-default">Manage customer returns and exchanges</description>
+        <icon>icons/return.png</icon>
+    </menuitem>
+
+    <menuaction id="bm_return_exchange_dashboard"
+        menupath="bm_return_exchange_menu"
+        site="true">
+
+        <name xml:lang="x-default">Return and Exchange Dashboard</name>
+        <short_description xml:lang="x-default">View Return Requests</short_description>
+        <description xml:lang="x-default">Dashboard for managing returns and exchanges</description>
+
+        <exec pipeline="ReturnDashboard" node="Show" />
+
+        <sub-pipelines>
+            <pipeline name="ReturnDashboard-AcceptRequest" />
+            <pipeline name="ReturnDashboard-RejectRequest" />
+            <pipeline name="ReturnDashboard-RefundLineItem" />
+            <pipeline name="ReturnDashboard-DownloadCSV" />
+        </sub-pipelines>
+
+        <icon>icons/dashboard.png</icon>
+    </menuaction>
+
+
+    <menuaction id="bm_cancel_dashboard" menupath="bm_return_exchange_menu" site="true">
+        <name xml:lang="x-default">Cancel Dashboard</name>
+        <short_description xml:lang="x-default">Manage Cancellations</short_description>
+        <description xml:lang="x-default">Dashboard for managing order cancellations</description>
+        <exec pipeline="CancelDashboard" node="Show" />
+        <sub-pipelines>
+            <pipeline name="CancelDashboard-RefundCancelledItem" /> 
+            <pipeline name="CancelDashboard-DownloadCSV" />
+        </sub-pipelines>
+        <icon>icons/cancel.png</icon>
+    </menuaction>
+
+</extensions>

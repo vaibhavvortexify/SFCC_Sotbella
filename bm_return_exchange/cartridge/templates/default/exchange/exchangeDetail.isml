@@ -1,0 +1,190 @@
+<iscontent type="text/html" charset="UTF-8" compact="true" />
+
+<div class="card-body">
+    <div class="d-flex justify-content-between align-items-start border-bottom pb-3 mb-4">
+        <div>
+            <h5 class="card-title fw-bold mb-1">
+                Request Details: <span id="det-ex-order">ORD-000000</span>
+            </h5>
+            <div class="text-muted small">
+                Requested on: <strong id="det-ex-requested-date">00-00-0000</strong> |
+                Delivered on: <strong id="det-ex-delivered-date">00-00-0000</strong>
+            </div>
+        </div>
+        <button id="btn-close-ex-detail" class="btn-close" aria-label="Close"></button>
+    </div>
+
+    <div class="row">
+        <div class="col-md-7 border-end pe-4">
+            <h6 class="text-primary fw-bold text-uppercase mb-3 small">Exchange Details</h6>
+            <div class="d-flex align-items-center justify-content-between bg-light p-3 border rounded mb-4">
+                <iscomment> Original Item Box </iscomment>
+                <div class="bg-white p-2 border rounded shadow-sm" style="width: 45%;">
+                    <div class="text-muted text-uppercase mb-2" style="font-size: 0.7rem; letter-spacing: 0.5px;">
+                        Original Item</div>
+                    <div class="d-flex align-items-center">
+                        <div class="me-2 bg-light border rounded d-flex align-items-center justify-content-center"
+                            style="width: 40px; height: 40px; overflow:hidden;">
+                            <img id="det-ex-orig-img" src="" alt="" style="width:100%; height:auto; display:none;">
+                        </div>
+                        <div style="line-height: 1.2;">
+                            <div id="det-ex-orig-name" class="fw-bold small text-truncate" style="max-width: 130px;">--
+                            </div>
+                            <div class="small text-muted">
+                                Qty: <span id="det-ex-orig-qty">--</span> | <span id="det-ex-orig-price">--</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="text-muted px-2 fs-5">&rarr;</div>
+
+                <iscomment> Exchange For Box </iscomment>
+                <div class="bg-white p-2 border rounded shadow-sm" style="width: 45%;">
+                    <div class="text-info text-uppercase mb-2" style="font-size: 0.7rem; letter-spacing: 0.5px;">
+                        Exchange For</div>
+                    <div class="d-flex align-items-center">
+                        <div class="me-2 bg-light border rounded d-flex align-items-center justify-content-center"
+                            style="width: 40px; height: 40px; overflow:hidden;">
+                            <img id="det-ex-new-img" src="" alt="" style="width:100%; height:auto; display:none;">
+                        </div>
+                        <div style="line-height: 1.2;">
+                            <div id="det-ex-new-name" class="fw-bold small text-truncate" style="max-width: 130px;">--
+                            </div>
+                            <div class="small text-muted">
+                                Qty: <span id="det-ex-new-qty">--</span> | <span id="det-ex-new-price">--</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h6 class="text-primary fw-bold text-uppercase mb-3 small">Reason & Media</h6>
+            <div class="row mb-2 small">
+                <div class="col-3 fw-bold text-secondary">Reason:</div>
+                <div class="col-9" id="det-ex-reason">--</div>
+            </div>
+            <div class="row mb-2 small">
+                <div class="col-3 fw-bold text-secondary">Description:</div>
+                <div class="col-9 fst-italic" id="det-ex-desc">--</div>
+            </div>
+            <div class="row mb-2 small">
+                <div class="col-3 fw-bold text-secondary">Uploads:</div>
+                <div class="col-9">
+                    <div id="det-ex-media-tiles" class="d-flex flex-wrap gap-2"></div>
+                </div>
+            </div>
+            <div class="row mb-2 small border-top pt-2 mt-2">
+                <div class="col-3 fw-bold text-secondary">Inventory Status:</div>
+                <div class="col-9"><span id="det-ex-inventory-status"
+                        class="badge bg-secondary-subtle text-secondary border">--</span></div>
+            </div>
+        </div>
+
+        <div class="col-md-5 ps-4">
+            <h6 class="text-primary fw-bold text-uppercase mb-3 small">Customer Details</h6>
+            <div class="row mb-2 small">
+                <div class="col-3 fw-bold text-secondary">Name:</div>
+                <div class="col-9" id="det-ex-cust-name">--</div>
+            </div>
+            <div class="row mb-2 small">
+                <div class="col-3 fw-bold text-secondary">Email:</div>
+                <div class="col-9 text-break">
+                    <span id="det-ex-cust-email">--</span>
+                </div>
+            </div>
+            <div class="row mb-2 small">
+                <div class="col-3 fw-bold text-secondary">Phone:</div>
+                <div class="col-9 text-break">
+                    <span id="det-ex-cust-phone">--</span>
+                </div>
+            </div>
+            <div class="row mb-4 small">
+                <div class="col-3 fw-bold text-secondary">Address:</div>
+                <div class="col-9" id="det-ex-cust-addr">--</div>
+            </div>
+
+            <div class="small mb-2 border-top pt-2">
+                <span class="fw-bold text-secondary">Payment Method:</span>
+                <span class="" id="det-ex-payment-method">--</span>
+            </div>
+
+            <iscomment> --- EXCHANGE REFUND BLOCK --- </iscomment>
+            <div id="ex-refund-section" class="mt-3 p-3 border rounded bg-white d-none">
+                <h6 class="text-uppercase text-primary fw-bold border-bottom pb-2 mb-3 small">Process Exchange Refund
+                </h6>
+
+                <iscomment> State: Already Refunded </iscomment>
+                <div id="ex-refund-already-processed" class="alert alert-success d-none py-2 small">
+                    <i class="fa fa-check-circle"></i> Amount Refunded Successfully.
+                </div>
+
+                <iscomment> State: Pending Refund </iscomment>
+                <div id="ex-refund-form-container">
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold text-secondary">Refund Amount</label>
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-text" id="ex-refund-currency">
+                                <isprint
+                                    value="${pdict.items && pdict.items.length > 0 ? pdict.items[0].currencySymbol : '$'}" />
+                            </span>
+                            <input type="number" id="ex-input-refund-amount" class="form-control" step="0.01"
+                                value="" />
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold text-secondary">Refund Method</label>
+                        <select id="ex-select-refund-method" class="form-select form-select-sm">
+                            <option value="">Select Method...</option>
+                            <isif condition="${pdict.allowedPaymentMethods && pdict.allowedPaymentMethods.length > 0}">
+                                <isloop items="${pdict.allowedPaymentMethods}" var="method">
+                                    <option value="${method.value}">${method.name}</option>
+                                </isloop>
+                            </isif>
+                        </select>
+                    </div>
+
+                    <iscomment> Bank Details Display: Only shown if BANK_TRANSFER is selected </iscomment>
+                    <div id="ex-bank-details-container" class="mt-3 mb-3 p-2 border rounded bg-white d-none"
+                        style="font-size: 0.85rem;">
+                        <div class="fw-bold text-secondary border-bottom mb-2 pb-1">Customer Bank Info</div>
+                        <div class="mb-1"><strong>Bank:</strong> <span id="ex-det-bank-name"></span></div>
+                        <div class="mb-1"><strong>Acc No:</strong> <span id="ex-det-bank-acc"></span></div>
+                        <div class="mb-1"><strong>IFSC:</strong> <span id="ex-det-bank-ifsc"></span></div>
+                        <div class="mb-1"><strong>Mobile:</strong> <span id="ex-det-bank-mobile"></span></div>
+                    </div>
+
+                    <button id="ex-btn-process-refund" class="btn btn-success btn-sm w-100">Process Exchange
+                        Refund</button>
+                </div>
+            </div>
+            <iscomment> --- END EXCHANGE REFUND BLOCK --- </iscomment>
+
+            <iscomment> Rejection Reason Section for Exchange </iscomment>
+            <div id="ex-rejection-reason-container" class="mt-3 d-none">
+
+                <div id="ex-rejection-input-block" class="d-none border-top pt-2">
+                    <label class="form-label small fw-bold text-muted">Reason for Rejection:</label>
+                    <textarea id="ex-reject-reason-input" class="form-control form-control-sm" p-2 rows="2"
+                        placeholder="Enter the reason if you are rejecting this request..."></textarea>
+                </div>
+
+                <div id="ex-rejection-display-block" class="d-none">
+                    <div class="p-2 border rounded bg-danger-subtle text-danger small">
+                        <strong>Reason:</strong> <span id="det-ex-rejection-reason-text"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div
+        class="d-flex justify-content-between align-items-center mt-4 pt-3 border-top bg-light p-3 mx-n3 mb-n3 rounded-bottom">
+        <span class="small text-muted fst-italic">* Action required for this request</span>
+        <div id="ex-action-buttons">
+            <button class="btn btn-danger btn-sm px-4 me-2">Reject Request</button>
+            <button class="btn btn-primary btn-sm px-4">Approve Request</button>
+        </div>
+    </div>
+</div>

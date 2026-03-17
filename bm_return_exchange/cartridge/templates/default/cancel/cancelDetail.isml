@@ -1,0 +1,120 @@
+<iscontent type="text/html" charset="UTF-8" compact="true" />
+
+<iscomment> Detail Header </iscomment>
+<div class="detail-header card-header d-flex justify-content-between align-items-center bg-white py-3">
+    <div>
+        <h2 class="h5 mb-1">Cancellation Details: <span id="det-cancel-order" class="text-primary">ORD-XXXXXX</span></h2>
+        <div class="small text-muted">
+            Cancellation Date: <strong id="det-cancel-req-date">00-00-0000</strong>
+        </div>
+    </div>
+    <button class="btn-bm btn btn-sm btn-outline-secondary" id="btn-close-cancel">X Close</button>
+</div>
+
+<iscomment> Detail Body </iscomment>
+<div class="detail-grid card-body">
+    <div class="row g-4">
+        <div class="col-lg-8 col-md-7">
+            <iscomment> Item View </iscomment>
+            <div id="cancel-item-view">
+                <h6 class="text-uppercase text-secondary fw-bold border-bottom pb-2 mb-3">Cancelled Item Details</h6>
+                <div class="d-flex bg-light p-3 border rounded">
+                    <div id="item-info-container">
+                        <div class="d-flex align-items-center">
+                            <div class='detail-info-image'>
+                                <img id="cancel-detail-img" src="" alt="Product Image"
+                                    class='img-thumbnail rounded p-0' style='width: 80px; height: 80px;' />
+                            </div>
+                            <div class='detail-info-text mx-3'>
+                                <strong class="d-block mb-2" id="det-cancel-item-name">Product Name</strong>
+                                <div class="small">
+                                    Price: <span id="det-cancel-item-price">0.00</span><br />
+                                    Quantity: <span id="det-cancel-item-qty">0</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <iscomment> Reason & Description </iscomment>
+            <h6 class="text-uppercase text-secondary fw-bold border-bottom pb-2 mb-3 mt-4">Reason & Description</h6>
+            <div class="mb-2 row">
+                <div class="col-sm-3 fw-bold text-secondary">Reason:</div>
+                <div class="col-sm-9" id="det-cancel-reason">N/A</div>
+            </div>
+            <div class="mb-2 row">
+                <div class="col-sm-3 fw-bold text-secondary">Description:</div>
+                <div class="col-sm-9 fst-italic" id="det-cancel-desc">No description provided.</div>
+            </div>
+        </div>
+
+        <iscomment> Customer Info Sidebar </iscomment>
+        <div class="col-lg-4 col-md-5">
+            <div class="bg-light p-3 rounded border h-100">
+                <h6 class="text-uppercase text-secondary fw-bold border-bottom pb-2 mb-3">Customer Details</h6>
+                <div class="mb-2"><span class="d-block fw-bold text-secondary small">Name:</span> 
+                    <span id="det-cancel-cust-name">--</span>
+                </div>
+                <div class="mb-2"><span class="d-block fw-bold text-secondary small">Email:</span> 
+                    <span id="det-cancel-cust-email" class="text-break">--</span>
+                </div>
+                <div class="mb-2"><span class="d-block fw-bold text-secondary small">Phone:</span> 
+                    <span id="det-cancel-cust-phone">--</span>
+                </div>
+                <div class="mb-4"><span class="d-block fw-bold text-secondary small">Address:</span> 
+                    <span id="det-cancel-cust-addr">--</span>
+                </div>
+
+                <div class="small mb-2 border-top pt-2">
+                    <span class="fw-bold text-secondary">Original Payment Method:</span>
+                    <span id="det-cancel-payment-method">--</span>
+                </div>
+
+                <iscomment> Refund Processing Section </iscomment>
+                <div id="cancel-refund-section" class="mt-3 p-3 border rounded bg-white">
+                    <h6 class="text-uppercase text-primary fw-bold border-bottom pb-2 mb-3 small">Process Refund</h6>
+
+                    <iscomment> State: Already Refunded </iscomment>
+                    <div id="cancel-refund-already-processed" class="alert alert-success d-none py-2 small">
+                        <i class="fa fa-check-circle"></i> Refund Processed Successfully.
+                    </div>
+
+                    <iscomment> State: Pending Refund </iscomment>
+                    <div id="cancel-refund-form-container">
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold text-secondary">Refund Amount</label>
+                            <div class="input-group input-group-sm">
+                                <span class="input-group-text">$</span>
+                                <input type="number" id="input-cancel-refund-amount" class="form-control" step="0.01" value="" />
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold text-secondary">Refund Method</label>
+                            <select id="select-cancel-refund-method" class="form-select form-select-sm">
+                                <option value="">Select Method...</option>
+                                <isif condition="${pdict.allowedPaymentMethods && pdict.allowedPaymentMethods.length > 0}">
+                                    <isloop items="${pdict.allowedPaymentMethods}" var="method">
+                                        <option value="${method.value}">${method.name}</option>
+                                    </isloop>
+                                </isif>
+                            </select>
+                        </div>
+
+                        <iscomment> Bank Info Block </iscomment>
+                        <div id="can-bank-details-container" class="mt-3 mb-3 p-2 border rounded bg-white d-none" style="font-size: 0.85rem;">
+                            <div class="fw-bold text-secondary border-bottom mb-2 pb-1">Bank Info</div>
+                            <div class="mb-1"><strong>Bank:</strong> <span id="det-can-bank-name"></span></div>
+                            <div class="mb-1"><strong>Acc:</strong> <span id="det-can-bank-acc"></span></div>
+                            <div class="mb-1"><strong>IFSC:</strong> <span id="det-can-bank-ifsc"></span></div>
+                            <div class="mb-1"><strong>Mobile:</strong> <span id="det-can-bank-mobile"></span></div>
+                        </div>
+
+                        <button id="btn-process-cancel-refund" class="btn btn-success btn-sm w-100">Complete Refund</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

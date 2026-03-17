@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?demandware-pipeline version="2.0"?>
+
+<pipeline type="process">
+
+    <!-- ========================= -->
+    <!-- ShowCatalog ENTRY         -->
+    <!-- ========================= -->
+    <branch basename="ShowCatalog">
+        <segment>
+            <node>
+                <start-node name="ShowCatalog" call-mode="pipelinescript" secure="false"/>
+                <node-display x="1" y="1"/>
+            </node>
+
+            <simple-transition/>
+
+            <node>
+                <script-node>
+                    <file>controllers/IMPEXUploadController.js</file>
+                    <function>ShowCatalog</function>
+                </script-node>
+                <node-display x="1" y="2"/>
+            </node>
+
+            <simple-transition/>
+
+            <node>
+                <end-node name="ShowCatalog-Done"/>
+                <node-display x="1" y="3"/>
+            </node>
+        </segment>
+    </branch>
+
+
+    <!-- ========================= -->
+    <!-- ProcessCatalog ENTRY      -->
+    <!-- ========================= -->
+    <branch basename="ProcessCatalog">
+        <segment>
+            <node>
+                <start-node name="ProcessCatalog" call-mode="pipelinescript" secure="false"/>
+                <node-display x="4" y="1"/>
+            </node>
+
+            <simple-transition/>
+
+            <node>
+                <script-node>
+                    <file>controllers/IMPEXUploadController.js</file>
+                    <function>ProcessCatalog</function>
+                </script-node>
+                <node-display x="4" y="2"/>
+            </node>
+
+            <simple-transition/>
+
+            <node>
+                <end-node name="ProcessCatalog-Done"/>
+                <node-display x="4" y="3"/>
+            </node>
+        </segment>
+    </branch>
+
+
+    <!-- ========================= -->
+    <!-- ShowPricebook ENTRY       -->
+    <!-- ========================= -->
+    <branch basename="ShowPricebook">
+        <segment>
+            <node>
+                <start-node name="ShowPricebook" call-mode="pipelinescript" secure="false"/>
+                <node-display x="7" y="1"/>
+            </node>
+
+            <simple-transition/>
+
+            <node>
+                <script-node>
+                    <file>controllers/IMPEXUploadController.js</file>
+                    <function>ShowPricebook</function>
+                </script-node>
+                <node-display x="7" y="2"/>
+            </node>
+
+            <simple-transition/>
+
+            <node>
+                <end-node name="ShowPricebook-Done"/>
+                <node-display x="7" y="3"/>
+            </node>
+        </segment>
+    </branch>
+
+
+    <!-- ========================= -->
+    <!-- ProcessPricebook ENTRY    -->
+    <!-- ========================= -->
+    <branch basename="ProcessPricebook">
+        <segment>
+            <node>
+                <start-node name="ProcessPricebook" call-mode="pipelinescript" secure="false"/>
+                <node-display x="10" y="1"/>
+            </node>
+
+            <simple-transition/>
+
+            <node>
+                <script-node>
+                    <file>controllers/IMPEXUploadController.js</file>
+                    <function>ProcessPricebook</function>
+                </script-node>
+                <node-display x="10" y="2"/>
+            </node>
+
+            <simple-transition/>
+
+            <node>
+                <end-node name="ProcessPricebook-Done"/>
+                <node-display x="10" y="3"/>
+            </node>
+        </segment>
+    </branch>
+
+</pipeline>

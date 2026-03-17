@@ -1,0 +1,29 @@
+<isdecorate template="application/MenuFrame">
+    <isreplace var="content">
+
+        <h1>Upload Pricebook CSV</h1>
+
+        <isif condition="${pdict.error}">
+            <div class="error">${pdict.uploadMsg}</div>
+        </isif>
+
+        <isif condition="${pdict.success}">
+            <div class="success">${pdict.uploadMsg}</div>
+        </isif>
+
+        <form method="post"
+              enctype="multipart/form-data"
+              action="${URLUtils.url('IMPEXUploadController-ShowPricebook')}">
+
+            <input type="hidden" name="submitFile" value="true"/>
+
+            <div>
+                <label>Select Pricebook CSV:</label>
+                <input type="file" name="file" accept=".csv" required/>
+            </div>
+
+            <button type="submit">Upload CSV</button>
+        </form>
+
+    </isreplace>
+</isdecorate>

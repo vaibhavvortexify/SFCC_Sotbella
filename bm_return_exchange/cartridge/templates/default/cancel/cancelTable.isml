@@ -1,0 +1,52 @@
+<iscontent type="text/html" charset="UTF-8" compact="true" />
+<div class="table-responsive">
+    <table class="bm-table table table-hover align-middle border">
+        <thead class="table-light">
+            <tr>
+                <th scope="col">Item No</th>
+                <th scope="col">Item Details</th>
+                <th scope="col">Customer Email</th>
+                <th scope="col">Order Number</th>
+                <th scope="col">Date</th>
+                <th scope="col">Status</th>
+            </tr>
+        </thead>
+        <tbody id="cancel-table-body">
+            <isif condition="${pdict.items && pdict.items.length > 0}">
+                <isloop items="${pdict.items}" var="item">
+                    <tr class="cancel-row" 
+                        data-status="${item.status}" 
+                        data-order="${item.orderNo}"
+                        data-uuid="${item.lineItemId}" 
+                        data-item-json='${JSON.stringify(item)}'
+                        style="cursor:pointer;">
+
+                        <td>${item.sku}</td>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <div class='item-detail-image px-2'>
+                                    <img src='${item.productImage}' alt='${item.productName}' class='img-thumbnail rounded p-0'
+                                        style='width: 60px; height: 60px;' />
+                                </div>
+                                <div class='item-detail-text'>
+                                    <div class="fw-bold">${item.productName}</div>
+                                    <div class="small text-muted">Qty: ${item.quantity} | Price: ${item.currencySymbol}${item.singlePrice}</div> 
+                                </div>
+                            </div>
+                        </td>
+                        <td>${item.customerEmail}</td>
+                        <td>${item.orderNo}</td>
+                        <td>${item.creationDate}</td>
+                        <td>
+                            <span class="badge rounded-pill bg-dark">${item.displayStatus}</span>
+                        </td>
+                    </tr>
+                </isloop>
+            <iselse/>
+                <tr>
+                    <td colspan="6" class="text-center py-4 text-muted">No cancellation records found.</td>
+                </tr>
+            </isif>
+        </tbody>
+    </table>
+</div>

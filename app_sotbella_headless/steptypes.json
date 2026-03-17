@@ -1,0 +1,415 @@
+{
+	"step-types": {
+		"script-module-step": [
+			{
+				"@type-id": "custom.importInventoryFromUnicom",
+				"@supports-parallel-execution": "true",
+				"@supports-site-context": "false",
+				"@supports-organization-context": "true",
+				"description": "Step type to import Inventory from Unicommerce",
+				"module": "app_sotbella_headless/cartridge/scripts/job/importInventory.js",
+				"function": "execute",
+				"transactional": "false",
+				"parameters": {
+					"parameter": [
+						{
+							"@name": "lastNMinutes",
+							"@type": "double",
+							"@required": "false",
+							"@trim": "true",
+							"description": "Fetch Inventory updates in last N minutes. Default is 30 minutes.",
+							"default-value": "30"
+						},    
+						{
+							"@name": "InventoryIds",
+							"@type": "string",
+							"@required": "false",
+							"@trim": "true",
+							"description": "Use semicolon to separate multiple Inventory IDs to be fetched. Leave blank to fetch all inventories. Eg., sotbella-eu;sotbella-uk;sotbella-in;sotbella-us;sotbella-uae",
+							"default-value": "sotbella-eu;sotbella-uk;sotbella-in;sotbella-us;sotbella-uae"
+						},
+						{
+							"@name": "XMLFilePath",
+							"@type": "string",
+							"@required": "false",
+							"@trim": "true",
+							"description": "Path to the XML file for inventory. default is 'inventory/' folder in the root directory.",
+							"default-value": "inventory/"
+						},
+						{
+							"@name": "XMLFileName",
+							"@type": "string",
+							"@required": "false",
+							"@trim": "true",
+							"description": "Name of the XML file for inventory. Default is 'sotbella_inventory.xml'.",
+							"default-value": "sotbella_inventory.xml"
+						}
+					]
+				},
+				"status-codes": {
+					"status": [
+						{
+							"@code": "ERROR",
+							"description": "Unable to Create Inventory XML files"
+						},
+						{
+							"@code": "OK",
+							"description": "Created Inventory XML files successfully."
+						},
+						{
+							"@code": "WARN",
+							"description": "No Inventory updates found in the given duration."
+						}
+					]
+				}
+			},
+			{
+                "@type-id": "custom.GetUnicommerceOrderStatus",
+                "@supports-parallel-execution": "true",
+                "@supports-site-context": "true",
+                "@supports-organization-context": "false",
+                "description": "Step type to fetch and update order and orderLineItem statuses from Unicommerce",
+                "module": "app_sotbella_headless/cartridge/scripts/job/getUnicommerceOrderStatus.js",
+                "function": "getUnicommerceOrderStatus",
+                "transactional": "false", 
+                "parameters": {
+                    "parameter": [
+                        {
+							"@name": "lastNMinutes",
+							"@type": "double",
+							"@required": "false",
+							"@trim": "true",
+							"description": "Fetch Order updates in last N minutes. Default is 30 minutes.",
+							"default-value": "30"
+						}
+                    ]
+                },
+                "status-codes": {
+                    "status": [
+						{
+							"@code": "ERROR",
+							"description": "Unable to fetch/update Unicommerce Order statuses."
+						},
+						{
+							"@code": "OK",
+							"description": "Fetched and updated Unicommerce Order statuses successfully."
+						},
+						{
+							"@code": "WARN",
+							"description": "No Orders found to update."
+						}
+					]
+                }
+            },
+            {
+                "@type-id": "custom.ExportProductFeedSFMC",
+                "@supports-parallel-execution": "true",
+                "@supports-site-context": "true",
+                "@supports-organization-context": "false",
+                "description": "Exports a product catalog feed CSV and uploads it to SFMC SFTP.",
+                "module": "app_sotbella_headless/cartridge/scripts/job/exportProductFeedSFMC.js",
+                "function": "execute",
+                "transactional": "false",
+                "parameters": {
+                    "parameter": [
+                        {
+                            "@name": "TargetFolder",
+                            "@type": "string",
+                            "@required": "true",
+                            "@trim": "true",
+                            "description": "The remote folder on the SFTP server.",
+                            "default-value": "Import/Production/India/Product Catalog Data"
+                        },
+                        {
+                            "@name": "BaseProductUrl",
+                            "@type": "string",
+                            "@required": "true",
+                            "@trim": "true",
+                            "description": "The base URL for product links. E.g., 'https://sotbella.com/product/'",
+                            "default-value": "https://sotbella.com/product/"
+                        }
+                    ]
+                },
+                "status-codes": {
+                    "status": [
+                        {
+                            "@code": "ERROR",
+                            "description": "Failed to generate or upload the product feed."
+                        },
+                        {
+                            "@code": "OK",
+                            "description": "Product feed uploaded successfully."
+                        }
+                    ]
+                }
+            },
+            {
+                "@type-id": "custom.ExportInternationalProductFeedSFMC",
+                "@supports-parallel-execution": "false",
+                "@supports-site-context": "true",
+                "@supports-organization-context": "false",
+                "description": "Exports site-specific product data and appends to a shared international CSV.",
+                "module": "app_sotbella_headless/cartridge/scripts/job/exportInternationalProductFeed.js",
+                "function": "execute",
+                "transactional": "false",
+                "parameters": {
+                    "parameter": [
+                        {
+                            "@name": "TargetFolder",
+                            "@type": "string",
+                            "@required": "true",
+                            "@trim": "true",
+                            "description": "The remote folder on the SFTP server.",
+                            "default-value": "Import/International/Product Catalog Data"
+                        },
+                        {
+                            "@name": "IsFirstSite",
+                            "@type": "boolean",
+                            "@required": "false",
+                            "description": "Set to true for the first site in the sequence to delete existing files from previous runs."
+                        },
+                        {
+                            "@name": "IsLastSite",
+                            "@type": "boolean",
+                            "@required": "false",
+                            "description": "Set to true for the last site in the sequence to trigger the SFTP upload."
+                        },
+                        {
+                            "@name": "BaseProductUrl",
+                            "@type": "string",
+                            "@required": "true",
+                            "@trim": "true",
+                            "description": "The base URL for product links. E.g., 'https://sotbella.ae/product/'",
+                            "default-value": "https://sotbella.ae/product/"
+                        }
+                    ]
+                },
+                "status-codes": {
+                    "status": [
+                        {
+                            "@code": "ERROR",
+                            "description": "Failed to generate or append the product feed."
+                        },
+                        {
+                            "@code": "OK",
+                            "description": "Product feed segment processed successfully."
+                        }
+                    ]
+                }
+            },
+            {
+                "@type-id": "custom.ExportLocalizedProductFeedSFMC",
+                "@supports-parallel-execution": "false",
+                "@supports-site-context": "true",
+                "@supports-organization-context": "false",
+                "description": "Exports localized product attributes (names, descriptions) into a single shared CSV.",
+                "module": "app_sotbella_headless/cartridge/scripts/job/exportLocalizedProductFeed.js",
+                "function": "execute",
+                "transactional": "false",
+                "parameters": {
+                    "parameter": [
+                        {
+                            "@name": "TargetFolder",
+                            "@type": "string",
+                            "@required": "true",
+                            "default-value": "Import/International/Localization Data"
+                        },
+                        {
+                            "@name": "IsFirstSite",
+                            "@type": "boolean",
+                            "@required": "false",
+                            "description": "Check for the first site (e.g., US) to delete old files."
+                        },
+                        {
+                            "@name": "IsLastSite",
+                            "@type": "boolean",
+                            "@required": "false",
+                            "description": "Check for the last site (e.g., UAE) to trigger SFTP upload."
+                        },
+                        {
+                            "@name": "BaseProductUrl",
+                            "@type": "string",
+                            "@required": "true",
+                            "@trim": "true",
+                            "description": "The base URL for product links. E.g., 'https://sotbella.ae/product/'",
+                            "default-value": "https://sotbella.ae/product/"
+                        }
+                    ]
+                }
+            },
+			{
+				"@type-id": "custom.CalculateProductDiscounts",
+				"@supports-parallel-execution": "true",
+				"@supports-site-context": "true",
+				"@supports-organization-context": "false",
+				"description": "Step type to update Discount Percentage of all Products",
+				"module": "app_sotbella_headless/cartridge/scripts/steptypes/updateDiscountPercentage.js",
+				"function": "updateDiscountPercentage",
+				"transactional": "false",
+				"timeout-in-seconds": "900",
+				"parameters": {
+					"parameter": []
+				},
+				"status-codes": {
+					"status": [
+						{
+							"@code": "ERROR",
+							"description": "Unable to Calculate and update Product Discounts."
+						},
+						{
+							"@code": "OK",
+							"description": "Updated Product Discounts successfully."
+						}
+					]
+				}
+			},
+			{
+				"@type-id": "custom.CheckStripeOrdersStatus",
+				"@supports-parallel-execution": "true",
+				"@supports-site-context": "true",
+				"@supports-organization-context": "false",
+				"description": "Step type to update orders status of as per Stripe Success",
+				"module": "app_sotbella_headless/cartridge/scripts/steptypes/updateStripeOrdersStatus.js",
+				"function": "updateStripeOrdersStatus",
+				"transactional": "false",
+				"timeout-in-seconds": "900",
+				"parameters": {
+					"parameter": []
+				},
+				"status-codes": {
+					"status": [
+						{
+							"@code": "ERROR",
+							"description": "Unable to Update Orders."
+						},
+						{
+							"@code": "OK",
+							"description": "Updated Orders status successfully."
+						}
+					]
+				}
+			},
+			{
+                "@type-id": "custom.orderExports",
+                "@supports-parallel-execution": "true",
+                "@supports-site-context": "true",
+                "@supports-organization-context": "false",
+                "description": "Step type to handle Order exports to Unicommerce and return/exchange flow",
+                "module": "app_sotbella_headless/cartridge/scripts/job/orderExport.js",
+                "function": "execute",
+                "transactional": "false",
+                "parameters": {},
+                "status-codes": {
+                    "status": [
+                        {
+                            "@code": "ERROR",
+                            "description": "Failed to export orders or process returns."
+                        },
+                        {
+                            "@code": "OK",
+                            "description": "Order export and return process completed successfully."
+                        }
+                    ]
+                }
+            },
+			{
+                "@type-id": "custom.sendReviewReminders",
+                "@supports-parallel-execution": "true",
+                "@supports-site-context": "true",
+                "@supports-organization-context": "false",
+                "description": "Sends review reminder emails to customers for completed orders after a configured number of days.",
+                "module": "app_sotbella_headless/cartridge/scripts/job/reviewReminder.js",
+                "function": "execute",
+                "transactional": "false",
+                "parameters": {
+                    "parameter": [
+                        {
+                            "@name": "reviewReminderThreshold",
+                            "@type": "double",
+                            "@required": "true",
+                            "description": "The number of days ago to check delivered products for sending review reminders."
+                        }
+                    ]
+                },
+                "status-codes": {
+                    "status": [
+                        {
+                            "@code": "ERROR",
+                            "description": "Failed to process orders or send emails."
+                        },
+                        {
+                            "@code": "OK",
+                            "description": "Review reminder process completed successfully."
+                        }
+                    ]
+                }
+            },
+			{
+                "@type-id": "custom.deleteUnverifiedCustomers",
+                "@supports-parallel-execution": "false",
+                "@supports-site-context": "true",
+                "@supports-organization-context": "false",
+                "description": "Exports a list of unverified customers modified more than X hours ago to src/UnverifiedCustomers/unverifiedCustomers.xml with mode='delete'.",
+                "module": "app_sotbella_headless/cartridge/scripts/job/deleteUnverifiedCustomers.js",
+                "function": "execute",
+                "transactional": "false",
+                "parameters": {
+                    "parameter": [
+                        {
+                            "@name": "hoursThreshold",
+                            "@type": "double",
+                            "@required": "true",
+                            "default-value": "24.0",
+                            "description": "Delete customers not modified within this many hours (e.g., 24)."
+                        }
+                    ]
+                },
+                "status-codes": {
+                    "status": [
+                        {
+                            "@code": "ERROR",
+                            "description": "Job failed."
+                        },
+                        {
+                            "@code": "OK",
+                            "description": "Job finished successfully."
+                        }
+                    ]
+                }
+            },
+			{
+                "@type-id": "custom.deleteWalletTransactions",
+                "@supports-parallel-execution": "false",
+                "@supports-site-context": "false",
+                "@supports-organization-context": "true",
+                "description": "Deletes walletTransaction custom objects that have not been modified in the last 24 hours.",
+                "module": "app_sotbella_headless/cartridge/scripts/job/deleteWalletTransactions.js",
+                "function": "execute",
+                "transactional": "false",
+                "parameters": {
+					"parameter": [
+                        {
+                            "@name": "hoursToKeep",
+                            "@type": "double",
+                            "@required": "false",
+                            "description": "The number of hours to look back. Transactions older than this (based on lastModified) will be deleted. Default is 24.",
+                            "default-value": "24"
+                        }
+                    ]
+				},
+                "status-codes": {
+                    "status": [
+                        {
+                            "@code": "ERROR",
+                            "description": "Job failed with an error."
+                        },
+                        {
+                            "@code": "OK",
+                            "description": "Job completed successfully."
+                        }
+                    ]
+                }
+            }
+		]
+	}
+}

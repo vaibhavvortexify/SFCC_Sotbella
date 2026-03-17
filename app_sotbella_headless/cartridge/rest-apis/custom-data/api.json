@@ -1,0 +1,74 @@
+{
+	"endpoints": [
+		{
+			"endpoint": "getPreferences",
+			"schema": "schema.yaml",
+			"implementation": "preferences"
+		},
+		{
+			"endpoint": "getContent",
+			"schema": "schema.yaml",
+			"implementation": "content"
+		},
+		{
+			"endpoint": "registerEmail",
+			"schema": "schema.yaml",
+			"implementation": "emailRegistration"
+		},
+		{
+			"endpoint": "shippingAvailability",
+			"schema": "schema.yaml",
+			"implementation": "shippingavailability"
+		},
+		{
+			"endpoint": "passwordlessLogin",
+			"schema": "schema.yaml",
+			"implementation": "passwordLessLogin"
+		},
+		{
+			"endpoint": "getOrders",
+			"schema": "schema.yaml",
+			"implementation": "orderHistory"
+		},
+		{
+			"endpoint": "updateOrder",
+			"schema": "schema.yaml",
+			"implementation": "updateOrder"
+		},
+		{
+			"endpoint": "getActivePromotions",
+			"schema": "schema.yaml",
+			"implementation": "activePromotions"
+		},
+		{
+            "endpoint": "cancelOrder",
+            "schema": "schema.yaml",
+            "implementation": "cancelOrder.js" 
+        },
+		{
+            "endpoint": "walletTopup",
+            "schema": "schema.yaml",
+            "implementation": "walletTopup.js"
+        },
+		{
+            "endpoint": "getWalletTransactions",
+            "schema": "schema.yaml",
+            "implementation": "walletTransactions.js"
+        },
+		{
+            "endpoint": "getWalletBalance",
+            "schema": "schema.yaml",
+            "implementation": "walletBalance.js"
+        },
+		{
+            "endpoint": "isItemBought",
+            "schema": "schema.yaml",
+            "implementation": "isItemBought.js"
+        },
+		{
+            "endpoint": "deleteCustomer",
+            "schema": "schema.yaml",
+            "implementation": "deleteCustomer.js"
+        }
+	]
+}

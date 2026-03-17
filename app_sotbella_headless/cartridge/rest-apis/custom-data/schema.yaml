@@ -1,0 +1,542 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Headless Implementation Utility API Endpoints
+components:
+  securitySchemes:
+    ShopperToken:
+      type: oauth2
+      flows:
+        authorizationCode:
+          authorizationUrl: https://dyp4l3dm.api.commercecloud.salesforce.com/shopper/auth/v1/organizations/f_ecom_blxz_002/oauth2/authorize
+          tokenUrl: https://dyp4l3dm.api.commercecloud.salesforce.com/shopper/auth/v1/organizations/f_ecom_blxz_002/oauth2/token
+          scopes:
+            c_headless_custom: Call headless shopper APIs
+        clientCredentials:
+          tokenUrl: https://dyp4l3dm.api.commercecloud.salesforce.com/shopper/auth/v1/organizations/f_ecom_blxz_002/oauth2/token
+          scopes:
+            c_headless_custom: Call headless shopper APIs
+paths:
+  /preferences:
+    get:
+      summary: Get relevant site preference values
+      operationId: getPreferences
+      parameters:
+        - in: query
+          name: siteId
+          required: true
+          schema:
+            type: string
+            minLength: 1
+        - in: query
+          name: locale
+          required: false
+          schema:
+            type: string
+            minLength: 1
+      responses:
+        "200":
+          description: Provides site preference values
+  /shippingAvailability:
+    post:
+      summary: Check the Shipping Service Availability
+      operationId: shippingAvailability
+      parameters:
+        - in: query
+          name: siteId
+          required: true
+          schema:
+            type: string
+            minLength: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - pincode
+              properties:
+                pincode:
+                  type: string 
+                  description: The delivery pincode to check
+                cod:
+                  type: boolean
+                  description: Check for Cash on Delivery availability (default true)
+      responses:
+        "200":
+          description: Shipping and COD availability result
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  isServicable:
+                    type: boolean
+                    description: Whether the pincode is serviceable
+                  isCOD:
+                    type: boolean
+                    description: Whether Cash on Delivery is available
+  /content/{contentId}:
+    get:
+      summary: Get dynamic content by content ID
+      operationId: getContent
+      parameters:
+        - in: path
+          name: contentId
+          required: true
+          schema:
+            type: string
+            minLength: 1
+        - in: query
+          name: siteId
+          required: true
+          schema:
+            type: string
+            minLength: 1
+        - in: query
+          name: locale
+          required: false
+          schema:
+            type: string
+            minLength: 1
+        - in: query
+          name: c_v
+          description: Used for cache busting
+          required: false
+          schema:
+            type: string
+            minLength: 1
+      responses:
+        "200":
+          description: Provides HTML content dynamically based on the content ID
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - body
+                properties:
+                  body:
+                    type: string
+  /emailRegistration:
+    post:
+      summary: Register email in Marketing Cloud Data Extension
+      operationId: registerEmail
+      parameters:
+        - in: query
+          name: siteId
+          required: true
+          schema:
+            type: string
+            minLength: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object 
+              properties:
+                email:
+                  type: string 
+      responses:
+        "200":
+          description: Registration success or failure
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                  details:
+                    type: object
+  /login:
+    post:
+      summary: Passwordless login handler
+      operationId: passwordlessLogin
+      parameters:
+        - in: query
+          name: siteId
+          required: true
+          schema:
+            type: string
+            minLength: 1
+        - in: query
+          name: locale
+          required: false
+          schema:
+            type: string
+            minLength: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - pwdless_login_token
+                - usid
+                - login_id
+              properties:
+                pwdless_login_token:
+                  type: string
+                  description: The token received from passwordless login
+                usid:
+                  type: string
+                  description: The user session ID
+                login_id:
+                  type: string
+                  description: The login Id of user
+                deviceId:
+                  type: string
+                  description: device identifier
+      responses:
+        "200":
+          description: Returns login success message
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+  /orders:
+    post:
+      summary: Get orders of the current customer
+      operationId: getOrders
+      parameters:
+        - in: query
+          name: siteId
+          required: true
+          schema:
+            type: string
+            minLength: 1
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object 
+              properties:
+                limit:
+                  type: integer 
+                offset:
+                  type: integer
+                status:
+                  type: string 
+                failedOrders:
+                  type: boolean
+                  description: "If false, excludes orders with failed status."
+      responses:
+        "200":
+          description: Get the order for current customer
+  /orderUpdate:
+    post:
+      summary: Cancel, Return or Exchange an order
+      operationId: updateOrder
+      parameters:
+        - in: query
+          name: siteId
+          required: true
+          schema:
+            type: string
+            minLength: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object 
+              properties:
+                orderNo:
+                  type: string 
+                updateType:
+                  type: string
+                reason:
+                  type: string
+      responses:
+        "200":
+          description: Order update success or failure                  
+  /activePromotions:
+    get:
+      summary: Get available promotions for customer
+      description: Retrieves a list of all publicly available promotions and promotions specifically assigned to the authenticated customer.
+      operationId: getActivePromotions
+      parameters:
+        - in: query
+          name: siteId
+          required: true
+          schema:
+            type: string
+            minLength: 1
+          description: The site ID.
+        - in: query
+          name: locale
+          required: false
+          schema:
+            type: string
+            minLength: 1
+          description: The locale for localized content (e.g., promotion names).
+      responses:
+        "200":
+          description: A list of available promotions and their associated coupons.
+          content:
+            application/json:
+              schema:
+                type: object
+                description: The result of a search for active promotions.
+                properties:
+                  count:
+                    type: integer
+                    description: The number of items in the main `promotions` array.
+                  total:
+                    type: integer
+                    description: The total number of items found.
+                  customerPromotions:
+                    type: array
+                    description: Promotions specifically assigned to the customer.
+                  promotions:
+                    type: array
+                    description: General promotions available to the customer.
+        "401":
+          description: Unauthorized. Customer token is missing or invalid.
+          content:
+            application/json:
+              schema:
+                type: object
+  /cancelOrder:
+    post:
+      summary: Cancel an order and automatically restore items to the session basket
+      operationId: cancelOrder
+      parameters:
+        - in: query
+          name: siteId
+          required: true
+          schema:
+            type: string
+            minLength: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - orderNo
+              properties:
+                orderNo:
+                  type: string
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                  orderNo:
+                    type: string
+                  newBasketId:
+                    type: string
+                    description: The ID of the basket where items were restored
+  /walletTopup:
+    post:
+      summary: Initiate a Wallet Top-up Transaction
+      operationId: walletTopup
+      parameters:
+        - in: query
+          name: siteId
+          required: true
+          schema:
+            type: string
+            minLength: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - amount
+                - deviceId
+              properties:
+                amount:
+                  type: number
+                  description: The amount to top up
+                currency:
+                  type: string
+                  description: Currency code (e.g., INR). Defaults to session currency.
+                deviceId:
+                  type: string
+                  description: device identifier for fraud checks
+      responses:
+        "200":
+          description: Top-up initiated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  transactionId:
+                    type: string
+                  signature:
+                    type: string
+                  payload:
+                    type: string
+  /walletTransactions:
+    post:
+      summary: Get wallet transactions for the logged-in customer
+      operationId: getWalletTransactions
+      parameters:
+        - in: query
+          name: siteId
+          required: true
+          schema:
+            type: string
+            minLength: 1
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                page:
+                  type: integer
+                  default: 1
+                limit:
+                  type: integer
+                  default: 20
+                startDate:
+                  type: string
+                  description: Start date in YYYY-MM-DD format
+                endDate:
+                  type: string
+                  description: End date in YYYY-MM-DD format
+      responses:
+        "200":
+          description: List of wallet transactions
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                  pagination:
+                    type: object
+        "401":
+          description: Unauthorized (User not logged in)
+        "400":
+          description: Bad Request (Invalid Site ID or JSON)
+  /walletBalance:
+    get:
+      summary: Get wallet balance for the logged-in customer
+      operationId: getWalletBalance
+      parameters:
+        - in: query
+          name: siteId
+          required: true
+          schema:
+            type: string
+            minLength: 1
+      responses:
+        "200":
+          description: Wallet balance details
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      email:
+                        type: string
+                      balance:
+                        type: number
+                      currency:
+                        type: string
+                      status:
+                        type: string
+                      lastTransactionAt:
+                        type: string
+        "401":
+          description: Unauthorized
+        "400":
+          description: Bad Request
+  /isItemBought:
+    get:
+      summary: Check if a product has been bought by the customer in the last 30 days
+      operationId: isItemBought
+      parameters:
+        - in: query
+          name: siteId
+          required: true
+          schema:
+            type: string
+            minLength: 1
+        - in: query
+          name: c_productId
+          required: true
+          description: The SKU or Product ID to check
+          schema:
+            type: string
+            minLength: 1
+      responses:
+        "200":
+          description: Returns true if the item was found in a qualifying order
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  isItemBought:
+                    type: boolean
+        "401":
+          description: Unauthorized
+        "400":
+          description: Bad Request
+  /deleteCustomer:
+    delete:
+      summary: Deletes the currently logged-in registered customer account
+      description: Permanently removes the customer profile, addresses, and payment instruments. Requires the user to be authenticated.
+      operationId: deleteCustomer
+      parameters:
+        - in: query
+          name: siteId
+          required: true
+          schema:
+            type: string
+            minLength: 1
+      responses:
+        "200":
+          description: Customer deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+        "401":
+          description: Unauthorized (User not logged in or not registered)
+        "500":
+          description: Internal Server Error                                    
+security:
+  - ShopperToken: ["c_headless_custom"]

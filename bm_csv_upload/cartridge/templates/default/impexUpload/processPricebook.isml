@@ -1,0 +1,6 @@
+<isdecorate template="application/MenuFrame">
+    <isreplace var="content">
+        <h1>Pricebook Processing</h1>
+        <p>${pdict.msg}</p>
+    </isreplace>
+</isdecorate>

@@ -1,0 +1,19 @@
+{
+	"endpoints": [
+		{
+			"endpoint": "returnExchange",
+			"schema": "schema.yaml",
+			"implementation": "returnExchange"
+		},
+		{
+			"endpoint": "cancel",
+			"schema": "schema.yaml",
+			"implementation": "cancel"
+		},
+		{
+			"endpoint": "trackOrder",
+			"schema": "schema.yaml",
+			"implementation": "trackOrder"
+		}
+	]
+}

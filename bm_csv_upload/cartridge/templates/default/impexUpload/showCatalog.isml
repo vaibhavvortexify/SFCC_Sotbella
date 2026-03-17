@@ -1,0 +1,27 @@
+<isdecorate template="application/MenuFrame">
+    <isreplace var="content">
+
+        <h1>Upload Catalog CSV</h1>
+
+        <isif condition="${pdict.error}">
+            <div class="error">${pdict.uploadMsg}</div>
+        </isif>
+
+        <isif condition="${pdict.success}">
+            <div class="success">${pdict.uploadMsg}</div>
+        </isif>
+
+        <form action="${URLUtils.url('IMPEXUploadController-ShowCatalog', 'submitFile', 'true')}"
+              method="POST"
+              enctype="multipart/form-data">
+
+            <div>
+                <label>Select CSV File:</label>
+                <input type="file" name="catalogFile" accept=".csv" required />
+            </div>
+
+            <button type="submit">Upload CSV</button>
+        </form>
+
+    </isreplace>
+</isdecorate>

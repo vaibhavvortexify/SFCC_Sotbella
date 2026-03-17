@@ -1,0 +1,209 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Headless Implementation Utility API Endpoints
+components:
+  securitySchemes:
+    ShopperToken:
+      type: oauth2
+      flows:
+        authorizationCode:
+          authorizationUrl: https://dyp4l3dm.api.commercecloud.salesforce.com/shopper/auth/v1/organizations/f_ecom_blxz_002/oauth2/authorize
+          tokenUrl: https://dyp4l3dm.api.commercecloud.salesforce.com/shopper/auth/v1/organizations/f_ecom_blxz_002/oauth2/token
+          scopes:
+            c_headless_custom: Call headless shopper APIs
+        clientCredentials:
+          tokenUrl: https://dyp4l3dm.api.commercecloud.salesforce.com/shopper/auth/v1/organizations/f_ecom_blxz_002/oauth2/token
+          scopes:
+            c_headless_custom: Call headless shopper APIs
+paths:
+  /returnExchange:
+    post:
+      summary: Create a return or exchange request 
+      operationId: returnExchange
+      parameters:
+        - in: query
+          name: siteId
+          required: true
+          schema:
+            type: string
+            minLength: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - orderId
+                - itemId
+                - actionType
+                - reason
+              properties:
+                orderId:
+                  type: string
+                actionType:
+                  type: string
+                itemId:
+                  type: string
+                reason:
+                  type: string
+                description:
+                  type: string
+                mediaLinks:
+                  type: array
+                  items:
+                    type: string
+                returnData:
+                  type: object
+                  properties:
+                    bankName:
+                      type: string
+                    accountNumber:
+                      type: string
+                    ifscCode:
+                      type: string
+                    mobileNumber:
+                      type: string
+                exchangeData:
+                  type: object
+                  properties:
+                    exchangeItemId:
+                      type: string
+                    quantity:
+                      type: integer
+                    bankName:
+                      type: string
+                    accountNumber:
+                      type: string
+                    ifscCode:
+                      type: string
+                    mobileNumber:
+                      type: string
+      responses:
+        "200":
+          description: Successfully processed return/exchange
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "success"
+                  message:
+                    type: string
+                  requestId:
+                    type: string
+        "400":
+          description: Invalid request
+        "500":
+          description: Internal server error
+  /cancel:
+    post:
+      summary: Cancel the order
+      operationId: cancel
+      parameters:
+        - in: query
+          name: siteId
+          required: true
+          schema:
+            type: string
+            minLength: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - orderId
+                - itemId
+                - reason
+              properties:
+                orderId:
+                  type: string
+                itemId:
+                  type: string
+                reason:
+                  type: string
+                description:
+                  type: string
+                bankDetails:
+                  type: object
+                  properties:
+                    bankName:
+                      type: string
+                    accountNumber:
+                      type: string
+                    ifscCode:
+                      type: string
+                    mobileNumber:
+                      type: string  
+      responses:
+        "200":
+          description: Successfully canceled the order
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "success"
+                  message:
+                    type: string
+                  requestId:
+                    type: string
+        "400":
+          description: Invalid request
+        "500":
+          description: Internal server error
+  /trackOrder:
+    post:
+      summary: Track an order using Order ID or AWB Number
+      operationId: trackOrder
+      parameters:
+        - in: query
+          name: siteId
+          required: true
+          schema:
+            type: string
+            minLength: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                orderId:
+                  type: string
+                  description: The Order ID (e.g., 00001203)
+                awbNumber:
+                  type: string
+                  description: The Tracking/AWB Number
+      responses:
+        "200":
+          description: Successfully retrieved tracking link
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "success"
+                  trackingLink:
+                    type: string
+                    example: "https://shiprocket.co/tracking/123456"
+        "400":
+          description: Invalid request or missing parameters
+        "404":
+          description: Order not found or Tracking number missing
+        "401":
+            description: Unauthorized (User not logged in)
+        "500":
+          description: Internal server error
+security:
+  - ShopperToken: ["c_headless_custom"]
