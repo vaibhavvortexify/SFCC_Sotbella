@@ -7,7 +7,7 @@ var Site = require('dw/system/Site');
  * Called before setting a shipping address for a shipment.
  */
 exports.beforePUT = function (basket, shipment, shippingAddress) {
-	if (!Site.getCurrent().getCustomPreferenceValue('guestCheckout'))
+if (!Site.getCurrent().getCustomPreferenceValue('guestCheckout'))
 		if (!request.session.customerAuthenticated)
 			return new Status(
 				Status.ERROR,

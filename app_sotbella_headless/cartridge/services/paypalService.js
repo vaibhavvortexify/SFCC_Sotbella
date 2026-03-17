@@ -106,6 +106,7 @@ var accessTokenService = LocalServiceRegistry.createService('paypal.http', {
 	}
 });
 
+var tokenResult = getAccessToken();
 var createOrderService = LocalServiceRegistry.createService('paypal.http', {
 	createRequest: function (svc, params) {
 		svc.setRequestMethod('POST');

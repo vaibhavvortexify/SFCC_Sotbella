@@ -53,10 +53,10 @@ declare global {
 			/** Step type to update orders status of as per Stripe Success 
 			 * @source [definition](file:///Users/vaibhavchauhan/Downloads/build790b4a9afe757ff1feb52003c47a1cc071fbc5f3%202/app_sotbella_headless/steptypes.json#267) */
 			'custom.CheckStripeOrdersStatus': Readonly<{}>;
-			/** Step type to reconcile pending PayPal orders and finalize SFCC orders once PayPal capture completes
+			/** Step type to reconcile pending PayPal orders and finalize SFCC orders once PayPal capture completes 
 			 * @source [definition](file:///Users/vaibhavchauhan/Downloads/build790b4a9afe757ff1feb52003c47a1cc071fbc5f3%202/app_sotbella_headless/steptypes.json#293) */
 			'custom.CheckPayPalOrdersStatus': Readonly<{}>;
-			/** Step type to handle Order exports to Unicommerce and return/exchange flow
+			/** Step type to handle Order exports to Unicommerce and return/exchange flow 
 			 * @source [definition](file:///Users/vaibhavchauhan/Downloads/build790b4a9afe757ff1feb52003c47a1cc071fbc5f3%202/app_sotbella_headless/steptypes.json#319) */
 			'custom.orderExports': Readonly<{}>;
 			/** Sends review reminder emails to customers for completed orders after a configured number of days. 
