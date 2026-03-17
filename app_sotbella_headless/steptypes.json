@@ -290,6 +290,32 @@
 				}
 			},
 			{
+				"@type-id": "custom.CheckPayPalOrdersStatus",
+				"@supports-parallel-execution": "true",
+				"@supports-site-context": "true",
+				"@supports-organization-context": "false",
+				"description": "Step type to reconcile pending PayPal orders and finalize SFCC orders once PayPal capture completes",
+				"module": "app_sotbella_headless/cartridge/scripts/steptypes/updatePayPalOrdersStatus.js",
+				"function": "updatePayPalOrdersStatus",
+				"transactional": "false",
+				"timeout-in-seconds": "900",
+				"parameters": {
+					"parameter": []
+				},
+				"status-codes": {
+					"status": [
+						{
+							"@code": "ERROR",
+							"description": "Unable to reconcile PayPal orders."
+						},
+						{
+							"@code": "OK",
+							"description": "Reconciled PayPal orders successfully."
+						}
+					]
+				}
+			},
+			{
                 "@type-id": "custom.orderExports",
                 "@supports-parallel-execution": "true",
                 "@supports-site-context": "true",

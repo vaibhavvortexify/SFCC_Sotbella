@@ -53,21 +53,24 @@ declare global {
 			/** Step type to update orders status of as per Stripe Success 
 			 * @source [definition](file:///Users/vaibhavchauhan/Downloads/build790b4a9afe757ff1feb52003c47a1cc071fbc5f3%202/app_sotbella_headless/steptypes.json#267) */
 			'custom.CheckStripeOrdersStatus': Readonly<{}>;
-			/** Step type to handle Order exports to Unicommerce and return/exchange flow 
+			/** Step type to reconcile pending PayPal orders and finalize SFCC orders once PayPal capture completes
 			 * @source [definition](file:///Users/vaibhavchauhan/Downloads/build790b4a9afe757ff1feb52003c47a1cc071fbc5f3%202/app_sotbella_headless/steptypes.json#293) */
+			'custom.CheckPayPalOrdersStatus': Readonly<{}>;
+			/** Step type to handle Order exports to Unicommerce and return/exchange flow
+			 * @source [definition](file:///Users/vaibhavchauhan/Downloads/build790b4a9afe757ff1feb52003c47a1cc071fbc5f3%202/app_sotbella_headless/steptypes.json#319) */
 			'custom.orderExports': Readonly<{}>;
 			/** Sends review reminder emails to customers for completed orders after a configured number of days. 
-			 * @source [definition](file:///Users/vaibhavchauhan/Downloads/build790b4a9afe757ff1feb52003c47a1cc071fbc5f3%202/app_sotbella_headless/steptypes.json#316) */
+			 * @source [definition](file:///Users/vaibhavchauhan/Downloads/build790b4a9afe757ff1feb52003c47a1cc071fbc5f3%202/app_sotbella_headless/steptypes.json#342) */
 			'custom.sendReviewReminders': Readonly<{
 				/** The number of days ago to check delivered products for sending review reminders. */
 				'reviewReminderThreshold': number}>;
 			/** Exports a list of unverified customers modified more than X hours ago to src/UnverifiedCustomers/unverifiedCustomers.xml with mode='delete'. 
-			 * @source [definition](file:///Users/vaibhavchauhan/Downloads/build790b4a9afe757ff1feb52003c47a1cc071fbc5f3%202/app_sotbella_headless/steptypes.json#348) */
+			 * @source [definition](file:///Users/vaibhavchauhan/Downloads/build790b4a9afe757ff1feb52003c47a1cc071fbc5f3%202/app_sotbella_headless/steptypes.json#374) */
 			'custom.deleteUnverifiedCustomers': Readonly<{
 				/** Delete customers not modified within this many hours (e.g., 24). */
 				'hoursThreshold': number}>;
 			/** Deletes walletTransaction custom objects that have not been modified in the last 24 hours. 
-			 * @source [definition](file:///Users/vaibhavchauhan/Downloads/build790b4a9afe757ff1feb52003c47a1cc071fbc5f3%202/app_sotbella_headless/steptypes.json#381) */
+			 * @source [definition](file:///Users/vaibhavchauhan/Downloads/build790b4a9afe757ff1feb52003c47a1cc071fbc5f3%202/app_sotbella_headless/steptypes.json#407) */
 			'custom.deleteWalletTransactions': Readonly<{
 				/** The number of hours to look back. Transactions older than this (based on lastModified) will be deleted. Default is 24. */
 				'hoursToKeep'?: number}>;

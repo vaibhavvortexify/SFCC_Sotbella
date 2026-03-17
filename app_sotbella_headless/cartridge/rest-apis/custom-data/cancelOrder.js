@@ -103,6 +103,8 @@ exports.cancelOrder = function () {
                     } else {
                         Logger.warn('Stripe Payment Instrument found but missing stripe_payment_intent_id for Order: {0}', orderNo);
                     }
+                } else if (pi.paymentMethod.equals('PAYPAL')) {
+                    Logger.info('Marking PayPal checkout as cancelled for Order: {0}', orderNo);
                 }
             }
         } catch (stripeError) {
@@ -112,6 +114,14 @@ exports.cancelOrder = function () {
         // 6. EXECUTE FAIL & RESTORE BASKET
         // 
         Transaction.wrap(function () {
+            var paymentInstruments = order.getPaymentInstruments().iterator();
+            while (paymentInstruments.hasNext()) {
+                var paymentInstrument = paymentInstruments.next();
+                if (paymentInstrument.paymentMethod.equals('PAYPAL')) {
+                    paymentInstrument.custom.paypal_order_status = 'CANCELLED';
+                    paymentInstrument.custom.paypal_capture_status = 'CANCELLED';
+                }
+            }
             // Optional: Log the reason before failing
             // order.custom.cancellationReason = "User requested via API"; 
             

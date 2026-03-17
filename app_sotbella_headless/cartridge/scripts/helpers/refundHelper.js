@@ -5,6 +5,7 @@ var Site = require('dw/system/Site');
 var TaxMgr = require('dw/order/TaxMgr');
 var ArrayList = require('dw/util/ArrayList');
 var Transaction = require('dw/system/Transaction');
+var paypalHelper = require('*/cartridge/scripts/helpers/paypalHelper');
 
 /**
  * Determines the refund amount.
@@ -123,7 +124,165 @@ function calculateRefundAmount(order, sku, cancelledContext) {
 // PAYMENT GATEWAY SPECIFIC HANDLERS
 // =================================================================
 
-function refundToWallet(order, amount) {
+function getPaymentTransactionRefundedAmount(paymentTransaction) {
+    var refundedAmount = 0;
+    var refunds = paymentTransaction && paymentTransaction.custom ? paymentTransaction.custom.refunds : null;
+
+    if (!refunds) {
+        return refundedAmount;
+    }
+
+    if (refunds.toArray) {
+        refunds = refunds.toArray();
+    }
+
+    if (!refunds.length) {
+        return refundedAmount;
+    }
+
+    for (var i = 0; i < refunds.length; i++) {
+        try {
+            var refundRecord = typeof refunds[i] === 'string' ? JSON.parse(refunds[i]) : refunds[i];
+            if (refundRecord && refundRecord.amount) {
+                refundedAmount += parseFloat(refundRecord.amount) || 0;
+            }
+        } catch (e) {
+            Logger.error('Unable to parse refund record: {0}', e.message);
+        }
+    }
+
+    return parseFloat(refundedAmount.toFixed(2));
+}
+
+function getRefundPriority(method) {
+    switch (String(method)) {
+        case 'WALLET':
+            return 0;
+        case 'PAYPAL':
+            return 1;
+        case 'STRIPE':
+        case 'CREDIT_CARD':
+            return 2;
+        case 'BREEZE':
+            return 3;
+        default:
+            return 99;
+    }
+}
+
+function buildRefundAllocations(order, amountToRefund) {
+    var supportedInstruments = [];
+    var paymentInstruments = order.getPaymentInstruments();
+    var iterator = paymentInstruments.iterator();
+
+    while (iterator.hasNext()) {
+        var paymentInstrument = iterator.next();
+        var method = paymentInstrument.getPaymentMethod();
+        var originalAmount = paymentInstrument.getPaymentTransaction().getAmount()
+            ? paymentInstrument.getPaymentTransaction().getAmount().getValue()
+            : 0;
+        var refundedAmount = getPaymentTransactionRefundedAmount(paymentInstrument.getPaymentTransaction());
+        var remainingAmount = parseFloat((originalAmount - refundedAmount).toFixed(2));
+
+        if (remainingAmount <= 0 || getRefundPriority(method) === 99) {
+            continue;
+        }
+
+        supportedInstruments.push({
+            paymentInstrument: paymentInstrument,
+            method: method,
+            remainingAmount: remainingAmount,
+            priority: getRefundPriority(method)
+        });
+    }
+
+    supportedInstruments.sort(function (left, right) {
+        return left.priority - right.priority;
+    });
+
+    var remainingRefund = parseFloat(amountToRefund.toFixed(2));
+    var allocations = [];
+
+    for (var i = 0; i < supportedInstruments.length && remainingRefund > 0; i++) {
+        var allocationAmount = Math.min(remainingRefund, supportedInstruments[i].remainingAmount);
+
+        if (allocationAmount > 0) {
+            allocations.push({
+                paymentInstrument: supportedInstruments[i].paymentInstrument,
+                method: supportedInstruments[i].method,
+                amount: parseFloat(allocationAmount.toFixed(2))
+            });
+            remainingRefund = parseFloat((remainingRefund - allocationAmount).toFixed(2));
+        }
+    }
+
+    return {
+        allocations: allocations,
+        remainder: remainingRefund
+    };
+}
+
+function executeRefundAllocation(order, allocation) {
+    switch (allocation.method) {
+        case 'WALLET':
+            return refundToWallet(order, allocation.amount, allocation.paymentInstrument);
+        case 'PAYPAL':
+            return refundToPayPal(order, allocation.amount, allocation.paymentInstrument);
+        case 'STRIPE':
+        case 'CREDIT_CARD':
+            return refundToStripe(order, allocation.amount, allocation.paymentInstrument);
+        case 'BREEZE':
+            return refundToBreeze(order, allocation.amount, allocation.paymentInstrument);
+        default:
+            return {
+                success: false,
+                method: allocation.method,
+                error: 'Unsupported refund method'
+            };
+    }
+}
+
+function refundAcrossInstruments(order, amountToRefund) {
+    var allocationPlan = buildRefundAllocations(order, amountToRefund);
+
+    if (!allocationPlan.allocations.length) {
+        return { success: false, message: 'No supported payment method found' };
+    }
+
+    if (allocationPlan.remainder > 0) {
+        return {
+            success: false,
+            message: 'Refund amount exceeds refundable payment instrument balance'
+        };
+    }
+
+    var responses = [];
+    for (var i = 0; i < allocationPlan.allocations.length; i++) {
+        var refundResult = executeRefundAllocation(order, allocationPlan.allocations[i]);
+        responses.push(refundResult);
+
+        if (!refundResult.success) {
+            return {
+                success: false,
+                message: refundResult.error || refundResult.message || 'Refund failed',
+                partialResults: responses
+            };
+        }
+    }
+
+    return {
+        success: true,
+        method: responses.length === 1 ? responses[0].method : 'MULTI',
+        amount: amountToRefund,
+        transactionId: responses
+            .map(function (response) { return response.transactionId; })
+            .filter(function (transactionId) { return transactionId; })
+            .join(','),
+        results: responses
+    };
+}
+
+function refundToWallet(order, amount, paymentInstrument) {
     Logger.info('Refund Strategy: WALLET. Amount: {0}', amount);
 
     var walletHelper = require('*/cartridge/scripts/helpers/walletHelper');
@@ -137,16 +296,28 @@ function refundToWallet(order, amount) {
     var remarks = 'Refund processed for Order #' + orderNo;
     var referenceId = orderNo;
 
-    var targetPaymentTransaction = null;
-    var paymentInstruments = order.getPaymentInstruments();
-    var iter = paymentInstruments.iterator();
-    while (iter.hasNext()) {
-        var pi = iter.next();
-        if (pi.paymentMethod.equals('WALLET')) {
-            targetPaymentTransaction = pi.paymentTransaction;
-            break;
+    var targetInstrument = paymentInstrument;
+    if (!targetInstrument) {
+        var paymentInstruments = order.getPaymentInstruments();
+        var iter = paymentInstruments.iterator();
+        while (iter.hasNext()) {
+            var pi = iter.next();
+            if (pi.paymentMethod.equals('WALLET')) {
+                targetInstrument = pi;
+                break;
+            }
         }
     }
+
+    if (!targetInstrument) {
+        return {
+            success: false,
+            method: 'WALLET',
+            error: 'Wallet payment instrument not found'
+        };
+    }
+
+    var targetPaymentTransaction = targetInstrument.paymentTransaction;
 
     // 2. Call Wallet Helper
     var result = walletHelper.creditCustomerWallet(
@@ -190,22 +361,29 @@ function refundToWallet(order, amount) {
     }
 }
 
-function refundToStripe(order, amount) {
+function refundToStripe(order, amount, paymentInstrument) {
     Logger.info('Refund Strategy: STRIPE. Amount: {0}', amount);
     var paymentHelpers = require('*/cartridge/scripts/helpers/paymentHelpers');
 
     // 1. Get Transaction ID from the Payment Instrument
     var transactionId = null;
+    var targetInstrument = paymentInstrument;
     var targetPaymentTransaction = null;
-    var paymentInstruments = order.getPaymentInstruments();
-    var iter = paymentInstruments.iterator();
-    while (iter.hasNext()) {
-        var pi = iter.next();
-        if (pi.paymentTransaction.transactionID) {
-            transactionId = pi.paymentTransaction.transactionID;
-            targetPaymentTransaction = pi.paymentTransaction;
-            break;
+    if (!targetInstrument) {
+        var paymentInstruments = order.getPaymentInstruments();
+        var iter = paymentInstruments.iterator();
+        while (iter.hasNext()) {
+            var pi = iter.next();
+            if (pi.paymentMethod.equals('STRIPE') || pi.paymentMethod.equals('CREDIT_CARD')) {
+                targetInstrument = pi;
+                break;
+            }
         }
+    }
+
+    if (targetInstrument) {
+        targetPaymentTransaction = targetInstrument.paymentTransaction;
+        transactionId = targetPaymentTransaction.transactionID;
     }
 
     if (!transactionId) {
@@ -245,6 +423,11 @@ function refundToStripe(order, amount) {
     }
 }
 
+function refundToPayPal(order, amount, paymentInstrument) {
+    Logger.info('Refund Strategy: PAYPAL. Amount: {0}', amount);
+    return paypalHelper.handlePayPalRefund(order, amount, paymentInstrument);
+}
+
 function refundToBreeze(order, amount) {
     Logger.info('Refund Strategy: BREEZE. Amount: {0}', amount);
     // TODO: Implement Breeze Service call
@@ -281,41 +464,7 @@ function processRefund(order, sku, cancelledContext) {
             return { success: false, message: 'Calculated refund amount is 0' };
         }
 
-        // 2. Identify Payment Instruments
-        var paymentInstruments = order.getPaymentInstruments();
-        var hasWallet = false;
-        var hasStripe = false;
-        var hasBreeze = false;
-
-        var iter = paymentInstruments.iterator();
-        while (iter.hasNext()) {
-            var pi = iter.next();
-            var method = pi.getPaymentMethod();
-
-            if (method.equals('WALLET')) {
-                hasWallet = true;
-                break; // Prioritize Wallet immediately
-            } else if (method.equals('STRIPE') || method.equals('CREDIT_CARD')) {
-                hasStripe = true;
-            } else if (method.equals('BREEZE')) {
-                hasBreeze = true;
-            }
-        }
-
-        // 3. Routing Logic (Priority: Wallet > Stripe > Breeze)
-        if (hasWallet) {
-            return refundToWallet(order, amountToRefund);
-        }
-        else if (hasStripe) {
-            return refundToStripe(order, amountToRefund);
-        }
-        else if (hasBreeze) {
-            return refundToBreeze(order, amountToRefund);
-        }
-        else {
-            logger.error('No supported payment instrument found for Order {0}', orderNo);
-            return { success: false, message: 'No supported payment method found' };
-        }
+        return refundAcrossInstruments(order, amountToRefund);
 
     } catch (e) {
         logger.error('Error in processRefund for Order {0}: {1}', orderNo, e.message);
@@ -343,41 +492,7 @@ function processManualRefund(order, amountToRefund) {
             return { success: false, message: 'Amount is 0 or negative' };
         }
 
-        // Identify Payment Instruments
-        var paymentInstruments = order.getPaymentInstruments();
-        var hasWallet = false;
-        var hasStripe = false;
-        var hasBreeze = false;
-
-        var iter = paymentInstruments.iterator();
-        while (iter.hasNext()) {
-            var pi = iter.next();
-            var method = pi.getPaymentMethod();
-
-            if (method.equals('WALLET')) {
-                hasWallet = true;
-                break;
-            } else if (method.equals('STRIPE') || method.equals('CREDIT_CARD')) {
-                hasStripe = true;
-            } else if (method.equals('BREEZE')) {
-                hasBreeze = true;
-            }
-        }
-
-        // Routing Logic
-        if (hasWallet) {
-            return refundToWallet(order, amountToRefund);
-        }
-        else if (hasStripe) {
-            return refundToStripe(order, amountToRefund);
-        }
-        else if (hasBreeze) {
-            return refundToBreeze(order, amountToRefund);
-        }
-        else {
-            logger.error('No supported payment instrument found for Order {0}', orderNo);
-            return { success: false, message: 'No supported payment method found' };
-        }
+        return refundAcrossInstruments(order, amountToRefund);
 
     } catch (e) {
         logger.error('Error in processManualRefund for Order {0}: {1}', orderNo, e.message);
