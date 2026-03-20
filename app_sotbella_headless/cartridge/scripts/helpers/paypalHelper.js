@@ -4,9 +4,7 @@ var Logger = require('dw/system/Logger').getLogger('PayPal', 'PayPal');
 var OrderMgr = require('dw/order/OrderMgr');
 var Order = require('dw/order/Order');
 var PaymentMgr = require('dw/order/PaymentMgr');
-var Site = require('dw/system/Site');
 var Transaction = require('dw/system/Transaction');
-var URLUtils = require('dw/web/URLUtils');
 var Calendar = require('dw/util/Calendar');
 var ArrayList = require('dw/util/ArrayList');
 
@@ -21,16 +19,6 @@ function getPayPalPaymentInstrument(order) {
 	for (var i = 0; i < paymentInstruments.length; i++) {
 		if (paymentInstruments[i].getPaymentMethod() === 'PAYPAL') {
 			return paymentInstruments[i];
-		}
-	}
-	return null;
-}
-
-function getPayPalLink(paypalOrder, rel) {
-	var links = paypalOrder && paypalOrder.links ? paypalOrder.links : [];
-	for (var i = 0; i < links.length; i++) {
-		if (links[i] && links[i].rel === rel) {
-			return links[i].href;
 		}
 	}
 	return null;
@@ -125,24 +113,30 @@ function buildShippingAddress(order) {
 		return null;
 	}
 
+	var address = {
+		address_line_1: addressLine1,
+		admin_area_2: adminArea2,
+		postal_code: postalCode,
+		country_code: countryCode
+	};
+
+	if (addressLine2) {
+		address.address_line_2 = addressLine2;
+	}
+
+	if (adminArea1) {
+		address.admin_area_1 = adminArea1;
+	}
+
 	return {
 		name: {
 			full_name: [shippingAddress.firstName || '', shippingAddress.lastName || ''].join(' ').replace(/\s+/g, ' ').trim()
 		},
-		address: {
-			address_line_1: addressLine1,
-			address_line_2: addressLine2 || undefined,
-			admin_area_2: adminArea2,
-			admin_area_1: adminArea1 || undefined,
-			postal_code: postalCode,
-			country_code: countryCode
-		}
+		address: address
 	};
 }
 
 function buildCreateOrderPayload(order) {
-	var site = Site.getCurrent();
-	var brandName = site.getCustomPreferenceValue('paypalBrandName') || site.getName() || 'Sotbella';
 	var customId = order.orderNo + '|' + order.orderToken;
 	var shipping = buildShippingAddress(order);
 	var purchaseUnit = {
@@ -151,7 +145,8 @@ function buildCreateOrderPayload(order) {
 		custom_id: customId,
 		description: 'Order ' + order.orderNo,
 		amount: {
-			currency_code: order.getCurrencyCode(),
+			//currency_code: order.getCurrencyCode(),
+			currency_code: 'USD',
 			value: order.totalGrossPrice.value.toFixed(2)
 		}
 	};
@@ -166,11 +161,8 @@ function buildCreateOrderPayload(order) {
 		payment_source: {
 			paypal: {
 				experience_context: {
-					brand_name: String(brandName),
 					user_action: 'PAY_NOW',
-					shipping_preference: shipping ? 'SET_PROVIDED_ADDRESS' : 'GET_FROM_FILE',
-					return_url: URLUtils.https('Paypal-Return', 'orderNo', order.orderNo, 'orderToken', order.orderToken).toString(),
-					cancel_url: URLUtils.https('Paypal-Cancel', 'orderNo', order.orderNo, 'orderToken', order.orderToken).toString()
+					shipping_preference: shipping ? 'SET_PROVIDED_ADDRESS' : 'GET_FROM_FILE'
 				}
 			}
 		}
@@ -199,10 +191,6 @@ function updatePayPalPaymentInstrument(order, paypalOrder) {
 
 	paymentInstrument.custom.paypal_order_id = paypalOrder && paypalOrder.id ? paypalOrder.id : paymentInstrument.custom.paypal_order_id;
 	paymentInstrument.custom.paypal_order_status = paypalOrder && paypalOrder.status ? paypalOrder.status : paymentInstrument.custom.paypal_order_status;
-	paymentInstrument.custom.paypal_approve_url =
-		getPayPalLink(paypalOrder, 'payer-action') ||
-		getPayPalLink(paypalOrder, 'approve') ||
-		paymentInstrument.custom.paypal_approve_url;
 	paymentInstrument.custom.paypal_capture_status =
 		capture && capture.status ? capture.status : paymentInstrument.custom.paypal_capture_status;
 	paymentInstrument.custom.paypal_payer_id = payer && payer.payer_id ? payer.payer_id : paymentInstrument.custom.paypal_payer_id;
@@ -273,16 +261,9 @@ function handlePayPalPayment(order, paymentInstrument) {
 		throw new Error('PayPal: Failed to create PayPal order.');
 	}
 
-	var approveUrl = getPayPalLink(createResp.object, 'payer-action') || getPayPalLink(createResp.object, 'approve');
-	if (!approveUrl) {
-		throw new Error('PayPal: Missing approval URL in create order response.');
-	}
-
 	Transaction.wrap(function () {
 		paymentInstrument.custom.paypal_order_id = createResp.object.id;
 		paymentInstrument.custom.paypal_order_status = createResp.object.status || 'CREATED';
-		paymentInstrument.custom.paypal_approve_url = approveUrl;
-		paymentInstrument.custom.paypal_request_id = buildPayPalRequestId(order.orderNo, 'approval');
 		paymentInstrument.custom.paypal_capture_id = '';
 		paymentInstrument.custom.paypal_capture_status = '';
 		paymentInstrument.custom.paypal_payer_id = '';
