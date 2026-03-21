@@ -34,24 +34,25 @@ exports.passwordlessLoginHelper = function () {
     var login_id = requestJSON.login_id
     var siteId = request.httpParameterMap.siteId.stringValue; 
     var deviceId = requestJSON.deviceId;
-    if (!/^\d{4}$/.test(fourDigitCode)) {
-        return {
-            success: false,
-            message: 'pwdless_login_token must contain 4 digits only',
-            details: {
-                error: 'pwdless_login_token must contain 4 digits only'
-            }
-        }
-    }
-    var isValidOTP = TokenHelper.validateOTP(fourDigitCode, login_id,siteId);
-    if (!isValidOTP) {
-        return {
-            success: false,
-            message: 'Invalid OTP or loginId mismatch',
-            details: { error: 'OTP validation failed' }
-        };
-    }
-    var passwordLessToken = TokenHelper.getLoginToken(fourDigitCode)
+    // if (!/^\d{4}$/.test(fourDigitCode)) {
+    //     return {
+    //         success: false,
+    //         message: 'pwdless_login_token must contain 4 digits only',
+    //         details: {
+    //             error: 'pwdless_login_token must contain 4 digits only'
+    //         }
+    //     }
+    // }
+    // var isValidOTP = TokenHelper.validateOTP(fourDigitCode, login_id,siteId);
+    // if (!isValidOTP) {
+    //     return {
+    //         success: false,
+    //         message: 'Invalid OTP or loginId mismatch',
+    //         details: { error: 'OTP validation failed' }
+    //     };
+    // }
+    //var passwordLessToken = TokenHelper.getLoginToken(fourDigitCode)
+    var passwordLessToken = fourDigitCode;
     if (!passwordLessToken) {
         return {
             success: false,

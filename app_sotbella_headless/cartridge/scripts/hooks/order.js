@@ -109,8 +109,9 @@ exports.beforePOST = function (basket) {
 		}
 
 		Transaction.wrap(function () {
-			if(customer.profile.email){
-				basket.customerEmail = customer.profile.email;
+			if(true || customer.profile.email){
+				//basket.customerEmail = customer.profile.email;
+				basket.customerEmail = 'vaibhav@test.com';
 			}
 		})
 		Logger.info('Inventory updated BEFORE ADD. Updated SKUs = {0}, Failed SKUs = {1}', JSON.stringify(result.updated), JSON.stringify(result.failed));
@@ -134,6 +135,7 @@ exports.afterPOST = function (order) {
 	}
 	var paymentInstruments = order.getPaymentInstruments();
 	var paymentHelpers = require('*/cartridge/scripts/helpers/paymentHelpers.js');
+	var paypalHelper = require('*/cartridge/scripts/helpers/paypalHelper');
 
 	if (order.getTotalGrossPrice().value === 0.00) {
 		// CASE A: 0 Amount Order (Skip Payment Gateways, just Place & Integrate)
@@ -147,6 +149,8 @@ exports.afterPOST = function (order) {
 			try {
 				if (paymentInstrument.getPaymentMethod() === 'STRIPE') {
 					paymentHelpers.handleStripePayment(order, paymentInstrument);
+				} else if (paymentInstrument.getPaymentMethod() === 'PAYPAL') {
+					paypalHelper.handlePayPalPayment(order, paymentInstrument);
 				} else if (paymentInstrument.getPaymentMethod() === 'COD') {
 					paymentHelpers.handleCODPayment(order, paymentInstrument);
 				} else if (paymentInstrument.getPaymentMethod() === 'WALLET') {
