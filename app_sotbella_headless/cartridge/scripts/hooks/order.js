@@ -110,8 +110,7 @@ exports.beforePOST = function (basket) {
 
 		Transaction.wrap(function () {
 			if(true || customer.profile.email){
-				//basket.customerEmail = customer.profile.email;
-				basket.customerEmail = 'vaibhav@test.com';
+				basket.customerEmail = customer.profile.email;
 			}
 		})
 		Logger.info('Inventory updated BEFORE ADD. Updated SKUs = {0}, Failed SKUs = {1}', JSON.stringify(result.updated), JSON.stringify(result.failed));

@@ -145,8 +145,8 @@ function buildCreateOrderPayload(order) {
 		custom_id: customId,
 		description: 'Order ' + order.orderNo,
 		amount: {
-			//currency_code: order.getCurrencyCode(),
-			currency_code: 'USD',
+			currency_code: order.getCurrencyCode(),
+			//currency_code: 'USD',
 			value: order.totalGrossPrice.value.toFixed(2)
 		}
 	};

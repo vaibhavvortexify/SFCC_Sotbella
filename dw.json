@@ -1,7 +1,8 @@
 {
- "version": "1.0.0",
- "hostname": "blxz-002.dx.commercecloud.salesforce.com",
- "username": "vaibhav.kumar@vortexifysync.com",
- "password": "2110@Vortexify",
- "code-version": "Paypal_v2"
+    "client-id": "5f71a62b-4318-40d8-9a41-d51b460d35ad",
+    "client-secret": "2110@Vortexify",
+    "hostname": "cert.staging-ap01-globolosysfashion.demandware.net",
+    "code-version": "Vortexify_Build1",
+    "pfx-cert": "/Users/vaibhavchauhan/Downloads/STG-2FA-globolosysfashion-W-18668777/Vaibhav.p12",
+    "pfx-passphrase": "0530ap01globolosysfashion1836"
 }

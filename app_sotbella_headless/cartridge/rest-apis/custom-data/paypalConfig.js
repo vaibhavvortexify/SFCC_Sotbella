@@ -6,8 +6,8 @@ var RESTResponseMgr = require('dw/system/RESTResponseMgr');
 exports.getPayPalSDKConfigData = function () {
     var site = Site.getCurrent();
     var preferences = site.getPreferences().getCustom();
-    //var currency = request.httpParameterMap.c_currency.stringValue || site.getDefaultCurrency();
-    var currency = 'USD';
+    var currency = request.httpParameterMap.c_currency.stringValue || site.getDefaultCurrency();
+    //var currency = 'USD';
     if (!preferences.paypalClientId) {
         return {
             success: false,
