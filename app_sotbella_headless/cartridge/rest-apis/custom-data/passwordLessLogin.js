@@ -52,7 +52,6 @@ exports.passwordlessLoginHelper = function () {
         };
     }
     var passwordLessToken = TokenHelper.getLoginToken(fourDigitCode)
-    var passwordLessToken = fourDigitCode;
     if (!passwordLessToken) {
         return {
             success: false,
