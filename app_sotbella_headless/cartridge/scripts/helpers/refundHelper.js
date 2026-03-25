@@ -5,7 +5,6 @@ var Site = require('dw/system/Site');
 var TaxMgr = require('dw/order/TaxMgr');
 var ArrayList = require('dw/util/ArrayList');
 var Transaction = require('dw/system/Transaction');
-var paypalHelper = require('*/cartridge/scripts/helpers/paypalHelper');
 
 /**
  * Determines the refund amount.
@@ -425,6 +424,7 @@ function refundToStripe(order, amount, paymentInstrument) {
 
 function refundToPayPal(order, amount, paymentInstrument) {
     Logger.info('Refund Strategy: PAYPAL. Amount: {0}', amount);
+    var paypalHelper = require('*/cartridge/scripts/helpers/paypalHelper');
     return paypalHelper.handlePayPalRefund(order, amount, paymentInstrument);
 }
 

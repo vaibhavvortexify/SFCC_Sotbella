@@ -134,7 +134,6 @@ exports.afterPOST = function (order) {
 	}
 	var paymentInstruments = order.getPaymentInstruments();
 	var paymentHelpers = require('*/cartridge/scripts/helpers/paymentHelpers.js');
-	var paypalHelper = require('*/cartridge/scripts/helpers/paypalHelper');
 
 	if (order.getTotalGrossPrice().value === 0.00) {
 		// CASE A: 0 Amount Order (Skip Payment Gateways, just Place & Integrate)
@@ -145,13 +144,14 @@ exports.afterPOST = function (order) {
 	} else {
 		for (var i = 0; i < paymentInstruments.length; i++) {
 			var paymentInstrument = paymentInstruments[i];
-			try {
-				if (paymentInstrument.getPaymentMethod() === 'STRIPE') {
-					paymentHelpers.handleStripePayment(order, paymentInstrument);
-				} else if (paymentInstrument.getPaymentMethod() === 'PAYPAL') {
-					paypalHelper.handlePayPalPayment(order, paymentInstrument);
-				} else if (paymentInstrument.getPaymentMethod() === 'COD') {
-					paymentHelpers.handleCODPayment(order, paymentInstrument);
+				try {
+					if (paymentInstrument.getPaymentMethod() === 'STRIPE') {
+						paymentHelpers.handleStripePayment(order, paymentInstrument);
+					} else if (paymentInstrument.getPaymentMethod() === 'PAYPAL') {
+						var paypalHelper = require('*/cartridge/scripts/helpers/paypalHelper');
+						paypalHelper.handlePayPalPayment(order, paymentInstrument);
+					} else if (paymentInstrument.getPaymentMethod() === 'COD') {
+						paymentHelpers.handleCODPayment(order, paymentInstrument);
 				} else if (paymentInstrument.getPaymentMethod() === 'WALLET') {
 					paymentHelpers.handleWalletPayment(order, paymentInstrument);
 				} else if (paymentInstrument.getPaymentMethod() === 'BREEZE') {

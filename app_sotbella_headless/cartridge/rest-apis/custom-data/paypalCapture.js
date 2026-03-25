@@ -4,9 +4,6 @@ var OrderMgr = require('dw/order/OrderMgr');
 var RESTResponseMgr = require('dw/system/RESTResponseMgr');
 var Logger = require('dw/system/Logger');
 
-var paypalService = require('*/cartridge/services/paypalService');
-var paypalHelper = require('*/cartridge/scripts/helpers/paypalHelper');
-
 function resolveAuthorizedOrder(orderNo, orderToken) {
     var order = orderToken ? OrderMgr.getOrder(orderNo, orderToken) : OrderMgr.getOrder(orderNo);
 
@@ -46,6 +43,8 @@ function resolveAuthorizedOrder(orderNo, orderToken) {
 
 exports.capturePayPalOrderData = function () {
     try {
+        var paypalService = require('*/cartridge/services/paypalService');
+        var paypalHelper = require('*/cartridge/scripts/helpers/paypalHelper');
         var requestBody = request.httpParameterMap.requestBodyAsString;
         if (!requestBody) {
             return { error: true, statusCode: 400, type: 'BadRequest', message: 'Request body is required' };
